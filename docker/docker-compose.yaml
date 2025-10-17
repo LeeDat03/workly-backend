@@ -1,0 +1,75 @@
+version: "3.8"
+
+services:
+    # PostgreSQL Database
+    postgres:
+        image: postgres:16-alpine
+        container_name: workly-postgres
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+            POSTGRES_DB: workly
+        ports:
+            - "5432:5432"
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U postgres"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+        networks:
+            - workly-network
+
+    # Redis Cache
+    redis:
+        image: redis:7-alpine
+        container_name: workly-redis
+        ports:
+            - "6379:6379"
+        volumes:
+            - redis_data:/data
+        healthcheck:
+            test: ["CMD", "redis-cli", "ping"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+        networks:
+            - workly-network
+
+    # API Service
+    api:
+        build:
+            context: ..
+            dockerfile: docker/Dockerfile
+        container_name: workly-api
+        environment:
+            - SERVER_HOST=0.0.0.0
+            - SERVER_PORT=8080
+            - DB_HOST=postgres
+            - DB_PORT=5432
+            - DB_USER=postgres
+            - DB_PASSWORD=postgres
+            - DB_NAME=workly
+            - DB_SSLMODE=disable
+            - REDIS_HOST=redis
+            - REDIS_PORT=6379
+            - JWT_SECRET=your-secret-key-change-this
+        ports:
+            - "8080:8080"
+        depends_on:
+            postgres:
+                condition: service_healthy
+            redis:
+                condition: service_healthy
+        networks:
+            - workly-network
+        restart: unless-stopped
+
+volumes:
+    postgres_data:
+    redis_data:
+
+networks:
+    workly-network:
+        driver: bridge
