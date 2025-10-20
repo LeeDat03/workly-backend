@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
-// LoggingMiddleware logs HTTP requests using Gin
 func LoggingMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		start := time.Now()
@@ -29,23 +29,18 @@ func LoggingMiddleware() gin.HandlerFunc {
 	}
 }
 
-// CORSMiddleware handles CORS using Gin
-func CORSMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
-		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-
-		if c.Request.Method == "OPTIONS" {
-			c.AbortWithStatus(http.StatusOK)
-			return
-		}
-
-		c.Next()
-	}
+func CORSMiddleware(feHost string) gin.HandlerFunc {
+	return cors.New(
+		cors.Config{
+			AllowOrigins:     []string{feHost},
+			AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
+			AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type", "Authorization"},
+			ExposeHeaders:    []string{"Content-Length"},
+			AllowCredentials: true,
+		},
+	)
 }
 
-// AuthMiddleware validates JWT tokens using Gin
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// TODO: Implement JWT validation
@@ -57,7 +52,6 @@ func AuthMiddleware() gin.HandlerFunc {
 	}
 }
 
-// RecoveryMiddleware recovers from panics using Gin
 func RecoveryMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		defer func() {
@@ -76,19 +70,15 @@ func RecoveryMiddleware() gin.HandlerFunc {
 	}
 }
 
-// ErrorHandlerMiddleware handles errors from handlers
 func ErrorHandlerMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Next()
 
-		// Check if there are any errors
 		if len(c.Errors) > 0 {
 			err := c.Errors.Last()
 
-			// Log the error
 			log.Printf("Error: %v", err.Error())
 
-			// If response hasn't been written yet
 			if !c.Writer.Written() {
 				c.JSON(http.StatusInternalServerError, gin.H{
 					"error":   "Internal Server Error",

@@ -14,7 +14,7 @@ import (
 )
 
 type Container struct {
-	config *config.Config
+	Config *config.Config
 	db     *sqlx.DB
 
 	UserRepo domain.UserRepository
@@ -25,7 +25,7 @@ type Container struct {
 
 func NewContainer(cfg *config.Config) (*Container, error) {
 	container := &Container{
-		config: cfg,
+		Config: cfg,
 	}
 
 	if err := container.initInfrastructure(); err != nil {
@@ -39,7 +39,7 @@ func NewContainer(cfg *config.Config) (*Container, error) {
 }
 
 func (c *Container) initInfrastructure() error {
-	db, err := database.NewPostgresDB(c.config.Database)
+	db, err := database.NewPostgresDB(c.Config.Database)
 	if err != nil {
 		return fmt.Errorf("failed to initialize database: %w", err)
 	}

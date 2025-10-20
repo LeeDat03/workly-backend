@@ -12,18 +12,17 @@ import (
 func SetupRoutes(c *container.Container) *gin.Engine {
 	router := gin.Default()
 
-	router.Use(CORSMiddleware())
-	router.Use(RecoveryMiddleware())
-
-	router.GET("/health", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"status":  "ok",
-			"message": "Server is running",
-		})
-	})
+	router.Use(CORSMiddleware(c.Config.FeHost))
+	// router.Use(RecoveryMiddleware())
 
 	apiV1 := router.Group("/api/v1")
 	{
+		apiV1.GET("/health", func(c *gin.Context) {
+			c.JSON(http.StatusOK, gin.H{
+				"status":  "ok",
+				"message": "Server is running",
+			})
+		})
 		setupAuthRoutes(apiV1, c)
 		setupUserRoutes(apiV1, c)
 	}

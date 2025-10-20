@@ -10,6 +10,7 @@ import (
 )
 
 type Config struct {
+	FeHost   string
 	Server   ServerConfig
 	Database DatabaseConfig
 	JWT      JWTConfig
@@ -61,6 +62,7 @@ func Load() (*Config, error) {
 	_ = godotenv.Load()
 
 	return &Config{
+		FeHost: getEnv("FE_HOST", "http://localhost:3000"),
 		Server: ServerConfig{
 			Host:        getEnv("SERVER_HOST", "localhost"),
 			Port:        getEnv("SERVER_PORT", "8080"),
