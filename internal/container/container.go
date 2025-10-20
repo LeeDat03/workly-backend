@@ -5,6 +5,7 @@ import (
 
 	"workly-backend/config"
 	"workly-backend/internal/domain"
+	v1 "workly-backend/internal/handler/http/v1"
 	"workly-backend/internal/infrastructure/database"
 	"workly-backend/internal/repository/postgres"
 	"workly-backend/internal/usecase"
@@ -16,11 +17,14 @@ import (
 type Container struct {
 	config *config.Config
 	db     *sqlx.DB
-
+	//Layer Repo
 	UserRepo domain.UserRepository
-
+	//Layer UseCase
 	UserUseCase *usecase.UserUseCase
 	AuthUseCase *usecase.AuthUseCase
+	//Layer Handler
+	AuthHandler *v1.AuthHandler
+	UserHandler *v1.UserHandler
 }
 
 func NewContainer(cfg *config.Config) (*Container, error) {
@@ -34,6 +38,7 @@ func NewContainer(cfg *config.Config) (*Container, error) {
 
 	container.initRepositories()
 	container.initUseCases()
+	container.initHandler()
 
 	return container, nil
 }
@@ -79,6 +84,11 @@ func (c *Container) initUseCases() {
 	// TODO: Add more use cases with their dependencies
 	// c.ProjectUseCase = usecase.NewProjectUseCase(c.ProjectRepo, c.UserRepo)
 	// c.TaskUseCase = usecase.NewTaskUseCase(c.TaskRepo, c.ProjectRepo, c.UserRepo)
+}
+
+func (c *Container) initHandler() {
+	c.AuthHandler = v1.NewAuthHandler(c.AuthUseCase)
+	c.UserHandler = v1.NewUserHandler(c.UserUseCase)
 }
 
 func (c *Container) Close() error {
