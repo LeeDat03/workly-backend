@@ -2,6 +2,12 @@
 
 setup project with env like env.example
 
+-   Setup Docker container for pg + redis
+
+```
+docker compose up -d
+```
+
 -   Build and run app
 
 ```

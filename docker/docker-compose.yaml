@@ -37,34 +37,34 @@ services:
         networks:
             - workly-network
 
-    # API Service
-    api:
-        build:
-            context: ..
-            dockerfile: docker/Dockerfile
-        container_name: workly-api
-        environment:
-            - SERVER_HOST=0.0.0.0
-            - SERVER_PORT=8080
-            - DB_HOST=postgres
-            - DB_PORT=5432
-            - DB_USER=postgres
-            - DB_PASSWORD=postgres
-            - DB_NAME=workly
-            - DB_SSLMODE=disable
-            - REDIS_HOST=redis
-            - REDIS_PORT=6379
-            - JWT_SECRET=your-secret-key-change-this
-        ports:
-            - "8080:8080"
-        depends_on:
-            postgres:
-                condition: service_healthy
-            redis:
-                condition: service_healthy
-        networks:
-            - workly-network
-        restart: unless-stopped
+    # # API Service
+    # api:
+    #     build:
+    #         context: ..
+    #         dockerfile: docker/Dockerfile
+    #     container_name: workly-api
+    #     environment:
+    #         - SERVER_HOST=0.0.0.0
+    #         - SERVER_PORT=8080
+    #         - DB_HOST=postgres
+    #         - DB_PORT=5432
+    #         - DB_USER=postgres
+    #         - DB_PASSWORD=postgres
+    #         - DB_NAME=workly
+    #         - DB_SSLMODE=disable
+    #         - REDIS_HOST=redis
+    #         - REDIS_PORT=6379
+    #         - JWT_SECRET=your-secret-key-change-this
+    #     ports:
+    #         - "8080:8080"
+    #     depends_on:
+    #         postgres:
+    #             condition: service_healthy
+    #         redis:
+    #             condition: service_healthy
+    #     networks:
+    #         - workly-network
+    #     restart: unless-stopped
 
 volumes:
     postgres_data:
