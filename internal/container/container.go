@@ -46,6 +46,14 @@ func (c *Container) initInfrastructure() error {
 	c.db = db
 	logger.Info("✅ Database connection established")
 
+	ok := false
+	if ok {
+		if err := database.RunMigrations(c.db); err != nil {
+			return fmt.Errorf("database migrations failed: %w", err)
+		}
+		logger.Info("✅ Database migrations applied")
+	}
+
 	// TODO: Initialize other infrastructure
 	// - Redis cache
 	// - Email service

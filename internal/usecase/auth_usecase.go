@@ -20,7 +20,7 @@ func NewAuthUseCase(userRepo domain.UserRepository) *AuthUseCase {
 }
 
 func (uc *AuthUseCase) Register(ctx context.Context, req *dto.RegisterRequest) (*domain.User, error) {
-	// Check if user already exists
+	// // Check if user already exists
 	existingUser, err := uc.userRepo.GetByEmail(ctx, req.Email)
 	if err != nil && err != domain.ErrNotFound {
 		return nil, fmt.Errorf("failed to check existing user: %w", err)
@@ -29,22 +29,14 @@ func (uc *AuthUseCase) Register(ctx context.Context, req *dto.RegisterRequest) (
 		return nil, domain.ErrUserAlreadyExists
 	}
 
-	// Hash password
+	// // Hash password
 	hashedPassword, err := utils.HashPassword(req.Password)
 	if err != nil {
 		return nil, fmt.Errorf("failed to hash password: %w", err)
 	}
 
-	// Generate user ID
-	userID, err := utils.GenerateID()
-	if err != nil {
-		return nil, fmt.Errorf("failed to generate user ID: %w", err)
-	}
-
-	// Create user entity
 	now := time.Now()
 	user := &domain.User{
-		ID:        userID,
 		Email:     req.Email,
 		Password:  hashedPassword,
 		Name:      req.Name,

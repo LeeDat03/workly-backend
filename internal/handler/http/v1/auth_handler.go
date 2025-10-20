@@ -4,6 +4,7 @@ import (
 	"workly-backend/internal/dto"
 	"workly-backend/internal/handler/http/response"
 	"workly-backend/internal/usecase"
+	"workly-backend/pkg/logger"
 
 	"github.com/gin-gonic/gin"
 )
@@ -20,6 +21,7 @@ func NewAuthHandler(authUseCase *usecase.AuthUseCase) *AuthHandler {
 
 func (h *AuthHandler) Register(ctx *gin.Context) {
 	var req dto.RegisterRequest
+
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		response.BadRequest(ctx, err.Error())
 		return
@@ -30,6 +32,8 @@ func (h *AuthHandler) Register(ctx *gin.Context) {
 		response.Error(ctx, err)
 		return
 	}
+
+	logger.Info("User", user)
 
 	userResponse := &dto.UserResponse{
 		ID:        user.ID,

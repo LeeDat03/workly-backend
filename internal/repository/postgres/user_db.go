@@ -20,11 +20,25 @@ func NewUserDbRepository(db *sqlx.DB) *UserDbRepository {
 
 func (r *UserDbRepository) Create(ctx context.Context, user *domain.User) error {
 	query := `
-		INSERT INTO users (id, email, password, name, role, created_at, updated_at)
-		VALUES (:id, :email, :password, :name, :role, :created_at, :updated_at)
+		INSERT INTO users (email, password, name, role, created_at, updated_at)
+		VALUES (:email, :password, :name, :role, :created_at, :updated_at)
+		RETURNING id
 	`
-	_, err := r.db.NamedExecContext(ctx, query, user)
-	return err
+
+	rows, err := r.db.NamedQueryContext(ctx, query, user)
+	if err != nil {
+		return err
+	}
+
+	defer rows.Close()
+
+	if rows.Next() {
+		if err := rows.Scan(&user.ID); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func (r *UserDbRepository) GetByID(ctx context.Context, id string) (*domain.User, error) {
@@ -55,7 +69,7 @@ func (r *UserDbRepository) GetByEmail(ctx context.Context, email string) (*domai
 
 func (r *UserDbRepository) Update(ctx context.Context, user *domain.User) error {
 	query := `
-		UPDATE users 
+		UPDATE users
 		SET email = :email, name = :name, role = :role, updated_at = :updated_at
 		WHERE id = :id
 	`
