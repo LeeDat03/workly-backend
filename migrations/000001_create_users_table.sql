@@ -1,4 +1,5 @@
 -- +goose Up
+-- +goose StatementBegin
 CREATE TABLE IF NOT EXISTS industries (
   id BIGSERIAL PRIMARY KEY,
   industry VARCHAR(200) NOT NULL
@@ -111,3 +112,7 @@ CREATE TABLE IF NOT EXISTS user_work_experience_skill (
   skill_id BIGINT NOT NULL,
   PRIMARY KEY (work_exp_id, skill_id)
 );
+-- +goose StatementEnd
+-- +goose Down
+-- +goose StatementBegin
+-- +goose StatementEnd
