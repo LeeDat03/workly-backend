@@ -115,4 +115,14 @@ CREATE TABLE IF NOT EXISTS user_work_experience_skill (
 -- +goose StatementEnd
 -- +goose Down
 -- +goose StatementBegin
+DROP TABLE IF EXISTS user_work_experience_skill;
+DROP TABLE IF EXISTS user_work_experience;
+DROP TABLE IF EXISTS user_skills;
+DROP TABLE IF EXISTS user_educations;
+DROP TABLE IF EXISTS skills;
+DROP TABLE IF EXISTS locations;
+DROP TABLE IF EXISTS company_admin;
+DROP TABLE IF EXISTS companies;
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS industries;
 -- +goose StatementEnd
