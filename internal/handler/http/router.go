@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"workly-backend/internal/container"
-	v1 "workly-backend/internal/handler/http/v1"
 
 	"github.com/gin-gonic/gin"
 )
@@ -31,11 +30,9 @@ func SetupRoutes(c *container.Container) *gin.Engine {
 }
 
 func setupAuthRoutes(rg *gin.RouterGroup, c *container.Container) {
-	handler := v1.NewAuthHandler(c.AuthUseCase)
-
 	authGroup := rg.Group("/auth")
 	{
-		authGroup.POST("/register", handler.Register)
+		authGroup.POST("/register", c.AuthHandler.Register)
 		// TODO: Add more auth routes
 		// authGroup.POST("/login", handler.Login)
 		// authGroup.POST("/logout", handler.Logout)
@@ -44,13 +41,11 @@ func setupAuthRoutes(rg *gin.RouterGroup, c *container.Container) {
 }
 
 func setupUserRoutes(rg *gin.RouterGroup, c *container.Container) {
-	handler := v1.NewUserHandler(c.UserUseCase)
-
 	userGroup := rg.Group("/users")
 	{
-		userGroup.POST("", handler.CreateUser)
-		userGroup.GET("/:id", handler.GetUser)
-		userGroup.PUT("/:id", handler.UpdateUser)
-		userGroup.DELETE("/:id", handler.DeleteUser)
+		userGroup.POST("", c.UserHandler.CreateUser)
+		userGroup.GET("/:id", c.UserHandler.GetUser)
+		userGroup.PUT("/:id", c.UserHandler.UpdateUser)
+		userGroup.DELETE("/:id", c.UserHandler.DeleteUser)
 	}
 }
