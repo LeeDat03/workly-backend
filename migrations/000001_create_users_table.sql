@@ -1,5 +1,11 @@
 -- +goose Up
 -- +goose StatementBegin
+
+CREATE TYPE status_enum AS ENUM ('PENDING', 'ACCEPT', 'REJECT');
+CREATE TYPE owner_type_enum AS ENUM ('USER', 'COMPANY', 'VISITOR');
+CREATE TYPE degree_enum AS ENUM ('ASSOCIATE', 'BACHELOR', 'MASTER', 'DOCTOR');
+
+
 CREATE TABLE IF NOT EXISTS industries (
   id BIGSERIAL PRIMARY KEY,
   industry VARCHAR(200) NOT NULL
@@ -43,13 +49,13 @@ CREATE TABLE IF NOT EXISTS companies (
 CREATE TABLE IF NOT EXISTS company_admin (
   user_id BIGINT NOT NULL,
   company_id BIGINT NOT NULL,
-  status SMALLINT NOT NULL /* 'PENDING|ACCEPT|REJECT' */,
+  status status_enum NOT NULL /* 'PENDING|ACCEPT|REJECT' */,
   PRIMARY KEY (user_id, company_id)
 );
 
 CREATE TABLE IF NOT EXISTS locations (
   id BIGSERIAL PRIMARY KEY,
-  owner_type SMALLINT NOT NULL /* 'USER|COMPANY|VISITOR' */,
+  owner_type owner_type_enum NOT NULL /* 'USER|COMPANY|VISITOR' */,
   owner_id BIGINT DEFAULT NULL,
   street_address VARCHAR(100) NOT NULL,
   city VARCHAR(100) NOT NULL,
@@ -68,7 +74,7 @@ CREATE TABLE IF NOT EXISTS user_educations (
   id BIGSERIAL PRIMARY KEY,
   user_id BIGINT NOT NULL DEFAULT 0,
   school BIGINT NOT NULL,
-  degree SMALLINT NOT NULL /* 'ASSOCIATE|BACHELOR|MASTER|DOCTOR' */,
+  degree degree_enum NOT NULL /* 'ASSOCIATE|BACHELOR|MASTER|DOCTOR' */,
   major VARCHAR(50) NOT NULL DEFAULT '0',
   description TEXT NOT NULL,
   start_date DATE NOT NULL,
@@ -115,6 +121,7 @@ CREATE TABLE IF NOT EXISTS user_work_experience_skill (
 -- +goose StatementEnd
 -- +goose Down
 -- +goose StatementBegin
+
 DROP TABLE IF EXISTS user_work_experience_skill;
 DROP TABLE IF EXISTS user_work_experience;
 DROP TABLE IF EXISTS user_skills;
@@ -125,4 +132,8 @@ DROP TABLE IF EXISTS company_admin;
 DROP TABLE IF EXISTS companies;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS industries;
+DROP TYPE IF EXISTS status_enum;
+DROP TYPE IF EXISTS owner_type_enum;
+DROP TYPE IF EXISTS degree_enum;
+
 -- +goose StatementEnd
